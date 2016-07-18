@@ -108,10 +108,13 @@ var Sandbox;
         //コマンド発行
         MainClass.prototype.IssueCommands = function (p) {
             var self = p;
+            self.Command(self.S_IDLE, 2);
+            self.Command(self.S_CREATE_PLANE_AND_LOAD_TEXTURE);
+            self.Command(self.S_IDLE, 5);
+            self.Command(self.S_CREATE_BASIC_SCENE2);
             self.Command(self.S_IDLE, 5);
             self.Command(self.S_LOAD);
             self.Command(self.S_IDLE, 5);
-            self.Command(self.S_CREATE_BASIC_SCENE);
             self.Command(self.S_DONE);
         };
         // State
@@ -150,6 +153,57 @@ var Sandbox;
                 self.m_camera = new BABYLON.ArcRotateCamera("camera1", 0, 0.8, 100, BABYLON.Vector3.Zero(), self.m_scene);
                 self.m_camera.attachControl(self.m_canvas);
                 var mesh = BABYLON.Mesh.CreateBox("box01", 50, self.m_scene);
+                var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), self.m_scene);
+            }
+            else {
+                self.Done();
+            }
+        };
+        //マテリアルカラーのテスト
+        MainClass.prototype.S_CREATE_BASIC_SCENE2 = function (t, i) {
+            var self = i.self;
+            if (t == 0) {
+                self.m_scene = new BABYLON.Scene(self.m_engine);
+                self.m_scene.clearColor = new BABYLON.Color3(56 / 256, 87 / 256, 145 / 256);
+                self.m_camera = new BABYLON.ArcRotateCamera("camera1", 0, 0.8, 100, BABYLON.Vector3.Zero(), self.m_scene);
+                self.m_camera.attachControl(self.m_canvas);
+                self.m_mesh = BABYLON.Mesh.CreateSphere("sphere01", 10, 50, self.m_scene);
+                var mat = new BABYLON.StandardMaterial("mat1", self.m_scene);
+                mat.diffuseColor = new BABYLON.Color3(1, 0, 0);
+                self.m_mesh.material = mat;
+                var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), self.m_scene);
+            }
+            else {
+                if (t > 10) {
+                    self.Done();
+                }
+                var mat2 = self.m_mesh.material;
+                mat2.diffuseColor = new BABYLON.Color3(t % 1, 0, 0);
+                self.m_mesh.material = mat2;
+            }
+        };
+        MainClass.prototype.S_CREATE_PLANE_AND_LOAD_TEXTURE = function (t, i) {
+            var self = i.self;
+            if (t == 0) {
+                self.m_scene = new BABYLON.Scene(self.m_engine);
+                self.m_scene.clearColor = new BABYLON.Color3(56 / 256, 87 / 256, 145 / 256);
+                self.m_camera = new BABYLON.ArcRotateCamera("camera1", 0, 0.8, 100, BABYLON.Vector3.Zero(), self.m_scene);
+                self.m_camera.attachControl(self.m_canvas);
+                var mat = new BABYLON.StandardMaterial("planeMaterial", self.m_scene);
+                var tex = new BABYLON.Texture("assets/floor.png", self.m_scene);
+                //var tex2 = new BABYLON.Texture("assets/floor_normal.png", self.m_scene);
+                tex.uScale = tex.vScale = 5;
+                //tex2.uScale = tex2.vScale = 5;
+                //tex3.uScale = tex3.vScale = 5;
+                mat.diffuseTexture = tex;
+                //mat.bumpTexture = tex2;
+                //mat.specularTexture = tex3;
+                mat.fogEnabled = false;
+                var plane = BABYLON.Mesh.CreatePlane("plane", 150, self.m_scene);
+                plane.material = mat;
+                plane.position.y -= 5;
+                plane.rotation.x = Math.PI / 2;
+                self.m_mesh = plane;
                 var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), self.m_scene);
             }
             else {
