@@ -71,6 +71,8 @@
     <Content Include="assets\floor.png">
       <BrowseToURL>~/assets/floor.png</BrowseToURL>
     </Content>
+    <Content Include="assets\palm.png" />
+    <Content Include="assets\player.png" />
     <Content Include="assets\wood.png">
       <BrowseToURL>~/assets/wood.png</BrowseToURL>
     </Content>
