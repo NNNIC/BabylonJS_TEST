@@ -109,6 +109,8 @@ var Sandbox;
         MainClass.prototype.IssueCommands = function (p) {
             var self = p;
             self.Command(self.S_IDLE, 2);
+            self.Command(self.S_TEXT_TEST);
+            //self.Command(self.S_IDLE, 5);
             self.Command(self.S_SPlITE_TEST);
             self.Command(self.S_IDLE, 5);
             self.Command(self.S_CREATE_PLANE_AND_LOAD_TEXTURE);
@@ -266,6 +268,38 @@ var Sandbox;
             }
             else {
                 self.Done();
+            }
+        };
+        MainClass.prototype.S_TEXT_TEST = function (t, i) {
+            var self = i.self;
+            if (t == 0) {
+                self.m_scene = new BABYLON.Scene(self.m_engine);
+                self.m_scene.clearColor = new BABYLON.Color3(56 / 256, 87 / 256, 145 / 256);
+                self.m_camera = new BABYLON.ArcRotateCamera("camera1", 0, 0.8, 100, BABYLON.Vector3.Zero(), self.m_scene);
+                self.m_camera.attachControl(self.m_canvas);
+                self.m_outputplane = BABYLON.Mesh.CreatePlane("outputplane", 25, self.m_scene, false);
+                self.m_outputplane.billboardMode = BABYLON.AbstractMesh.BILLBOARDMODE_ALL;
+                self.m_outputplane.material = new BABYLON.StandardMaterial("outputplane", self.m_scene);
+                self.m_outputplane.position = new BABYLON.Vector3(-25, 15, 25);
+                self.m_outputplane.scaling.y = 0.4;
+                self.m_outputplaneTexture = new BABYLON.DynamicTexture("dynamic texture", 512, self.m_scene, true);
+                var mat = self.m_outputplane.material;
+                mat.diffuseTexture = self.m_outputplaneTexture;
+                mat.specularColor = new BABYLON.Color3(0, 0, 0);
+                mat.emissiveColor = new BABYLON.Color3(1, 1, 1);
+                mat.backFaceCulling = false;
+                self.m_outputplane.material = mat;
+                self.m_outputplaneTexture.drawText("alpha", null, 140, "bold 140px verdana", "white", "#0000AA");
+                var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), self.m_scene);
+            }
+            else {
+                var context2D = self.m_outputplaneTexture.getContext();
+                context2D.clearRect(0, 200, 512, 512);
+                var t2 = Math.floor(t * 1000);
+                self.m_outputplaneTexture.drawText(t2.toString(), null, 380, "140px verdana", "white", null);
+                if (t > 10) {
+                    self.Done();
+                }
             }
         };
         MainClass.prototype.S_DONE = function (t, i) {
